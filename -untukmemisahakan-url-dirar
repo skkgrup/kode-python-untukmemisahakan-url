@@ -1,0 +1,35 @@
+import os
+
+# Ambil semua folder di direktori saat ini yang diawali dengan 'ID' atau '[ID'
+target_folders = [
+    name for name in os.listdir()
+    if os.path.isdir(name) and (name.startswith('ID') or name.startswith('[ID'))
+]
+
+results = []
+
+# Loop setiap folder dan cari file All Passwords.txt
+for folder in target_folders:
+    file_path = os.path.join(folder, 'All Passwords.txt')
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        url = user = password = ''
+
+        for line in lines:
+            line = line.strip()
+            if line.startswith('URL:'):
+                url = line[4:].strip()
+            elif line.startswith('USER:'):
+                user = line[5:].strip()
+            elif line.startswith('PASS:'):
+                password = line[5:].strip()
+                results.append(f"{url}:{user}:{password}")
+                url = user = password = ''  # Reset entri berikutnya
+
+# Simpan ke result.txt
+with open('result.txt', 'w', encoding='utf-8') as out:
+    out.write('\n'.join(results))
+
+print(f"Berhasil mengambil {len(results)} entri dari {len(target_folders)} folder ke result.txt")
